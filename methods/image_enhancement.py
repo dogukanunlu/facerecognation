@@ -1,7 +1,8 @@
 import cv2
 import numpy as np
+from skimage import feature
 
-
+# return sift descriptors for each image
 def sift_creator(image_path=None, image=None):
     if image_path:
         image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
@@ -15,7 +16,8 @@ def sift_creator(image_path=None, image=None):
 
     return img_sift, descriptors
 
-def extract_features(images):
+# return sift descriptors list for all images
+def extract_sift_features(images):
     descriptors_list = []
 
     for img in images:
@@ -26,6 +28,16 @@ def extract_features(images):
             descriptors_list.append(np.zeros(128))
     
     return np.array(descriptors_list)
+
+# return hog features image list
+def extract_HOG_features(images):
+    X_train = []
+    for img in images:
+        # gauss = cv2.GaussianBlur(img,(5, 5),0)
+        X_train.append(feature.hog(img, orientations=5, pixels_per_cell=(8, 8),
+                        cells_per_block=(4, 4), transform_sqrt=True, block_norm="L2"))
+    return X_train
+
 
 # Image enhancement for low level vision: image inpainting
 # Image Inpainting is a task of reconstructing missing regions in an image.
