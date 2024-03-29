@@ -2,6 +2,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import cv2
 import os
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import imread
 

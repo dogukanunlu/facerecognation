@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from skimage import feature
+from sklearn.cluster import KMeans
 
 # return sift descriptors for each image
 def sift_creator(image_path=None, image=None):
@@ -9,7 +10,7 @@ def sift_creator(image_path=None, image=None):
     
     if image is None:
         raise ValueError("The image could not be loaded.")
-    
+
     sift = cv2.SIFT_create()
     keypoints, descriptors = sift.detectAndCompute(image, None)
     img_sift = cv2.drawKeypoints(image, keypoints, None)
@@ -27,16 +28,21 @@ def extract_sift_features(images):
         else:
             descriptors_list.append(np.zeros(128))
     
-    return np.array(descriptors_list)
+    return descriptors_list
 
 # return hog features image list
 def extract_HOG_features(images):
-    X_train = []
+    hog_descriptors = []
     for img in images:
         # gauss = cv2.GaussianBlur(img,(5, 5),0)
-        X_train.append(feature.hog(img, orientations=5, pixels_per_cell=(8, 8),
+        hog_descriptors.append(feature.hog(img, orientations=5, pixels_per_cell=(8, 8),
                         cells_per_block=(4, 4), transform_sqrt=True, block_norm="L2"))
-    return X_train
+    return hog_descriptors
+
+def combine_features(sift_features, hog_features):
+    # Assuming SIFT and HOG features are arrays of the same length
+    combined_features = np.hstack((sift_features, hog_features))
+    return combined_features
 
 
 # Image enhancement for low level vision: image inpainting
