@@ -5,6 +5,15 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import StratifiedKFold, cross_val_score
 import numpy as np
 
+emotion_dict = {
+    0: "Angry",
+    1: "Disgust",
+    2: "Fear",
+    3: "Happy",
+    4: "Sad",
+    5: "Surprise",
+    6: "Neutral"
+}
 # Initialize the classifiers
 class SVMClassifier:
     def __init__(self):
@@ -63,6 +72,23 @@ class KNNClassifier:
         print("kNN Accuracy: ", accuracy)
         return accuracy, predictions
     
+    def predict_single_image(self, image_features, real_label=None):
+        # Ensure image_features is correctly shaped
+        if image_features.ndim == 1:
+            image_features = image_features.reshape(1, -1)
+        
+
+        # Predict the emotion for a single image based on its features
+        predicted_label = self.knn_classifier.predict(image_features)[0]
+        print(f"Predicted Label (numeric): {predicted_label}")  # Debugging: Check predicted numeric label
+
+        # Directly use predicted_label for lookup        
+        output_message = f" "
+        if real_label is not None:
+            real_emotion = emotion_dict.get(real_label, "Unknown")        
+        return output_message
+
+
     def cross_validation(self):
         images_combined = np.concatenate((self.X_train, self.X_test))
         labels_combined = np.concatenate((self.y_train, self.y_test))
@@ -95,6 +121,19 @@ class RandomForestClassifier:
         accuracy = accuracy_score(y_test, predictions)
         print("Random Forest Accuracy: ", accuracy)
         return accuracy, predictions
+    
+    def predict_single_image(self, image_features, real_label=None):
+        if image_features.ndim == 1:
+            image_features = image_features.reshape(1, -1)
+        
+
+        predicted_label = self.rf_classifier.predict(image_features)[0]
+        print(f"Predicted Label (numeric): {predicted_label}") 
+
+        output_message = f" "
+        if real_label is not None:
+            real_emotion = emotion_dict.get(real_label, "Unknown")        
+        return output_message
     
     def cross_validation(self):
         images_combined = np.concatenate((self.X_train, self.X_test))
