@@ -1,6 +1,6 @@
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier as SKRandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import StratifiedKFold, cross_val_score
 import numpy as np
@@ -74,7 +74,7 @@ class KNNClassifier:
 
 class RandomForestClassifier:
     def __init__(self, n_estimators=100):
-        self.rf_classifier = RandomForestClassifier(n_estimators=n_estimators)
+        self.rf_classifier = SKRandomForestClassifier(n_estimators=n_estimators)
         self.X_train = None
         self.X_test = None
         self.y_train = None
