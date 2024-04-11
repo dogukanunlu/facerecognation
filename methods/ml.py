@@ -5,15 +5,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import StratifiedKFold, cross_val_score
 import numpy as np
 
-emotion_dict = {
-    0: "Angry",
-    1: "Disgust",
-    2: "Fear",
-    3: "Happy",
-    4: "Sad",
-    5: "Surprise",
-    6: "Neutral"
-}
+
 # Initialize the classifiers
 class SVMClassifier:
     def __init__(self):
@@ -29,15 +21,12 @@ class SVMClassifier:
         predictions = self.predict(X_test)
         accuracy = accuracy_score(y_test, predictions)
         print("SVM Accuracy: ", accuracy)
-        return accuracy, predictions
-    
-    
+        return accuracy, predictions 
     
 
 class KNNClassifier:
     def __init__(self, n_neighbors=3):
         self.knn_classifier = KNeighborsClassifier(n_neighbors=n_neighbors)
-
 
     def train(self, X_train, y_train):
         self.knn_classifier.fit(X_train, y_train)
