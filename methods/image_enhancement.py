@@ -1,4 +1,10 @@
 import cv2
+from sklearn.decomposition import PCA
+
+def apply_pca(features, n_components=0.95):
+    pca = PCA(n_components=n_components, whiten=True)
+    pca_features = pca.fit_transform(features)
+    return pca_features, pca
 
 # Image enhancement for low level vision: image inpainting
 # Image Inpainting is a task of reconstructing missing regions in an image.

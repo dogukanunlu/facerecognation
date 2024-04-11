@@ -2,8 +2,6 @@ from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier as SKRandomForestClassifier
 from sklearn.metrics import accuracy_score
-from sklearn.model_selection import StratifiedKFold, cross_val_score
-import numpy as np
 
 
 # Initialize the classifiers

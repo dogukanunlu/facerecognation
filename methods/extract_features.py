@@ -2,6 +2,17 @@ from skimage.feature import local_binary_pattern, hog
 import numpy as np
 import cv2
 
+def extract_features(X_train, feature_method="LBP"):
+    # Feature extraction
+    if feature_method == "LBP":
+        X_train_features = extract_features_lbp(images=X_train)
+    elif feature_method == "HOG":
+        X_train_features = extract_features_hog(images=X_train)
+    elif feature_method == "combined":
+        X_train_features = extract_combined_features(images=X_train)
+        
+    return X_train_features
+
 # return sift descriptors for each image
 def sift_creator(image_path=None, image=None):
     if image_path:
@@ -50,11 +61,11 @@ def extract_features_hog(img=None, images=None):
     
     if img is not None:
         return hog(img, pixels_per_cell=(8, 8),
-                            cells_per_block=(2, 2), visualize=False, multichannel=False)
+                            cells_per_block=(2, 2), visualize=False)
     
     for image in images:
         hog_features = hog(image, pixels_per_cell=(8, 8),
-                            cells_per_block=(2, 2), visualize=False, multichannel=False)
+                            cells_per_block=(2, 2), visualize=False)
         features.append(hog_features)
         
     return np.array(features)
@@ -66,7 +77,7 @@ def extract_combined_features(images):
     combined_features = []
     for image in images:
         # Extract HOG features
-        hog_features = hog(image, pixels_per_cell=(8, 8), cells_per_block=(2, 2), visualize=False, multichannel=False)
+        hog_features = hog(image, pixels_per_cell=(8, 8), cells_per_block=(2, 2), visualize=False)
 
         # Extract LBP features
         lbp = local_binary_pattern(image, P=8, R=1, method='uniform')
