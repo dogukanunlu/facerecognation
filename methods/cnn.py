@@ -16,6 +16,16 @@ import itertools
 import numpy as np
 
 
+emotion_dict = {
+    0: "Angry",
+    1: "Disgust",
+    2: "Fear",
+    3: "Happy",
+    4: "Sad",
+    5: "Surprise",
+    6: "Neutral"
+}
+
 class cnn:
     def __init__(self, input_shape=(48, 48, 1), num_classes=7):
         self.model = self.create_model(input_shape, num_classes)
@@ -62,6 +72,15 @@ class cnn:
         plt.figure(figsize=(10, 8))
         self.plot_confusion_matrix(cm, classes=list(labels.values()), title='Confusion Matrix')
         plt.show()
+
+        def predict_single_image(self, image_array):
+            image_resized = np.resize(image_array, (48, 48, 1))
+            image_expanded = np.expand_dims(image_resized, axis=0)
+
+            prediction = self.model.predict(image_expanded)
+            predicted_class = np.argmax(prediction, axis=1)
+            predicted_emotion = emotion_dict[predicted_class[0]]
+            return predicted_emotion
 
     def plot_confusion_matrix(self, cm, classes,
                             normalize=False,
