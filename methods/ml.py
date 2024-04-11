@@ -39,9 +39,9 @@ class KNNClassifier:
         return accuracy, predictions
     
 
-class RandomForestClassifier:
+class RFClassifier:
     def __init__(self, n_estimators=1000):
-        self.rf_classifier = RandomForestClassifier(n_estimators=n_estimators)
+        self.rf_classifier = SKRandomForestClassifier(n_estimators=n_estimators)
 
     def train(self, X_train, y_train):
         self.rf_classifier.fit(X_train, y_train)
