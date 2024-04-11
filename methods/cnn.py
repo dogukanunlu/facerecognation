@@ -7,9 +7,16 @@ from sklearn.model_selection import StratifiedKFold, cross_val_score
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
+from keras.applications import VGG19
+from keras.layers import Dense, Dropout, GlobalAveragePooling2D
+from keras.models import Model
+from keras.optimizers import Adam
+from keras.callbacks import ReduceLROnPlateau, EarlyStopping
+from keras.regularizers import l2
 from tensorflow.keras.applications import VGG19
 from tensorflow.keras.models import Model
 from tensorflow.keras.applications import ResNet50
+from keras.regularizers import l2
 from tensorflow.keras.layers import GlobalAveragePooling2D
 import matplotlib.pyplot as plt
 import itertools
@@ -190,7 +197,7 @@ class cnn_vgg:
 
 class cnn_improved_vgg:
     def __init__(self, input_shape=(224, 224, 3), num_classes=7):
-        self.model = self.create_model(input_shape, num_classes)
+        self.model, self.callbacks = self.create_model(input_shape, num_classes)
 
     def create_model(self, input_shape, num_classes):
         base_model = VGG19(weights='imagenet', include_top=False, input_shape=input_shape)
@@ -210,35 +217,28 @@ class cnn_improved_vgg:
         model = Model(inputs=base_model.input, outputs=predictions)
         model.compile(optimizer=Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
         
-        # Add learning rate reduction and early stopping
-        reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=0.00001, verbose=1)
-        early_stopping = EarlyStopping(monitor='val_loss', patience=10, verbose=1)
+        reduce_lr = ReduceLROnPlateau(monitor='loss', factor=0.2, patience=5, min_lr=0.00001, verbose=1)
+        early_stopping = EarlyStopping(monitor='loss', patience=10, verbose=1)
         
         return model, [reduce_lr, early_stopping]
-    
+
     def train(self, train_generator, epochs=50):
-        history = self.model.fit(train_generator, epochs=epochs)
+        history = self.model.fit(train_generator, epochs=epochs,callbacks=self.callbacks)
         return history
 
     def evaluate(self, test_generator):
         test_generator.reset()
-        
         num_samples = test_generator.samples
-        
         predictions = self.model.predict(test_generator, steps=np.ceil(num_samples / test_generator.batch_size))
-        
         predicted_class_indices = np.argmax(predictions, axis=1)
-        
         true_class_indices = test_generator.classes
-        
         labels = (test_generator.class_indices)
         labels = dict((v,k) for k,v in labels.items())
         predictions_labels = [labels[k] for k in predicted_class_indices]
-        
+
         cm = confusion_matrix(true_class_indices, predicted_class_indices)
-        
         print(classification_report(true_class_indices, predicted_class_indices, target_names=list(labels.values())))
-        
+
         plt.figure(figsize=(10, 8))
         self.plot_confusion_matrix(cm, classes=list(labels.values()), title='Confusion Matrix')
         plt.show()
