@@ -5,19 +5,33 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import imread
+from PIL import Image
 
-def load_dataset(dataset_path):
+def load_dataset(data_dir, limit_category=('happy', 5000)):
+    categories = ['angry', 'fear', 'happy', 'neutral', 'sad', 'surprise']  # Assuming 'disgust' is already removed
     images = []
     labels = []
     
-    for label in os.listdir(dataset_path):
-        for file_name in os.listdir(os.path.join(dataset_path, label)):
-            img = cv2.imread(os.path.join(dataset_path, label, file_name), cv2.IMREAD_GRAYSCALE)
-            if img is not None:
-                images.append(img)
+    for label, category in enumerate(categories):
+        category_dir = os.path.join(data_dir, category)
+        if os.path.exists(category_dir):  # Check if category directory exists
+            loaded_images_count = 0  # Counter for images of the current category
+            for file in sorted(os.listdir(category_dir)):  # Sort files to maintain order
+                if limit_category and category == limit_category[0] and loaded_images_count >= limit_category[1]:
+                    break  # Stop if the limit for this category is reached
+                file_path = os.path.join(category_dir, file)
+                image = Image.open(file_path)
+                image = image.resize((48, 48))  # Resize images for uniformity
+                image = np.array(image)
+                images.append(image)
                 labels.append(label)
+                loaded_images_count += 1
     
-    return images, labels
+    # Convert lists to numpy arrays
+    X = np.array(images)
+    y = np.array(labels)
+    
+    return X, y
 
 def create_data_gen():
     return ImageDataGenerator(

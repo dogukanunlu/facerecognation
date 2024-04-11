@@ -1,49 +1,4 @@
 import cv2
-import numpy as np
-from skimage import feature
-from sklearn.cluster import KMeans
-
-# return sift descriptors for each image
-def sift_creator(image_path=None, image=None):
-    if image_path:
-        image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    
-    if image is None:
-        raise ValueError("The image could not be loaded.")
-
-    sift = cv2.SIFT_create()
-    keypoints, descriptors = sift.detectAndCompute(image, None)
-    img_sift = cv2.drawKeypoints(image, keypoints, None)
-
-    return img_sift, descriptors
-
-# return sift descriptors list for all images
-def extract_sift_features(images):
-    descriptors_list = []
-
-    for img in images:
-        _, descriptors = sift_creator(image=img)
-        if descriptors is not None:
-            descriptors_list.append(descriptors.mean(axis=0))
-        else:
-            descriptors_list.append(np.zeros(128))
-    
-    return descriptors_list
-
-# return hog features image list
-def extract_HOG_features(images):
-    hog_descriptors = []
-    for img in images:
-        # gauss = cv2.GaussianBlur(img,(5, 5),0)
-        hog_descriptors.append(feature.hog(img, orientations=5, pixels_per_cell=(8, 8),
-                        cells_per_block=(4, 4), transform_sqrt=True, block_norm="L2"))
-    return hog_descriptors
-
-def combine_features(sift_features, hog_features):
-    # Assuming SIFT and HOG features are arrays of the same length
-    combined_features = np.hstack((sift_features, hog_features))
-    return combined_features
-
 
 # Image enhancement for low level vision: image inpainting
 # Image Inpainting is a task of reconstructing missing regions in an image.
