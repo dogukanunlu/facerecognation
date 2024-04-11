@@ -10,6 +10,8 @@ def extract_features(X_train, feature_method="LBP"):
         X_train_features = extract_features_hog(images=X_train)
     elif feature_method == "combined":
         X_train_features = extract_combined_features(images=X_train)
+    elif feature_method == "SIFT":
+        X_train_features = extract_features_sift(images=X_train)
         
     return X_train_features
 
@@ -28,7 +30,7 @@ def sift_creator(image_path=None, image=None):
     return img_sift, descriptors
 
 # return sift descriptors list for all images
-def extract_features_sift(images):
+def extract_features_sift(images=None):
     descriptors_list = []
 
     for img in images:
@@ -38,7 +40,7 @@ def extract_features_sift(images):
         else:
             descriptors_list.append(np.zeros(128))
     
-    return descriptors_list
+    return np.array(descriptors_list)
 
 
 def extract_features_lbp(img=None, images=None):
